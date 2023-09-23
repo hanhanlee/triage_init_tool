@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+
+import sys
+import shutil
+import os
+
+if len(sys.argv) != 3:
+    print("Usage: ./copy_dir source_dir destination_dir")
+    sys.exit(1)
+
+source_directory = sys.argv[1]
+destination_directory = sys.argv[2]
+
+# List of directories to copy from source/packages
+packages_directories_to_copy = [
+    "Bootloader_20XX_Config-ARM-AST2600-AST2600EVB-src",
+    "Bootloader_20XX_platform_ast2600evb-src",
+    "Kernel_5_Config-ARM-AST2600-AST2600EVB-src",
+    "libipmipar_ast2600evb_ami-ARM-AST2600-AST2600EVB-AMI-src",
+    "libipmipar_ast2600evb_ami_usb_port_b-ARM-AST2600-AST2600EVB-AMI-src",
+    "libipmipdk-ARM-AST2600-AST2600EVB-AMI-src",
+    "libipmipdkcmds-ARM-AST2600-AST2600EVB-AMI-src",
+    "overrides",
+    "@PLATFORM_AST2600EVB-ANY"
+]
+
+# List of files to copy from source/configs
+configs_files_to_copy = [
+    "ast2600evb.PRJ"
+]
+
+# Create the destination/packages directory if it doesn't exist
+destination_packages_dir = os.path.join(destination_directory, "packages")
+if not os.path.exists(destination_packages_dir):
+    os.makedirs(destination_packages_dir)
+
+# Create the destination/configs directory if it doesn't exist
+destination_configs_dir = os.path.join(destination_directory, "configs")
+if not os.path.exists(destination_configs_dir):
+    os.makedirs(destination_configs_dir)
+
+# Copy directories from source/packages to destination/packages
+for directory in packages_directories_to_copy:
+    source_path = os.path.join(source_directory, "packages", directory)
+    destination_path = os.path.join(destination_packages_dir, directory)
+    try:
+        shutil.copytree(source_path, destination_path)
+        print(f"Copying {directory} to packages successful")
+    except Exception as e:
+        print(f"Copying {directory} to packages failed: {str(e)}")
+
+# Copy files from source/configs to destination/configs
+for file_name in configs_files_to_copy:
+    source_file = os.path.join(source_directory, "configs", file_name)
+    destination_file = os.path.join(destination_configs_dir, file_name)
+    try:
+        shutil.copy2(source_file, destination_file)
+        print(f"Copying {file_name} to configs successful")
+    except Exception as e:
+        print(f"Copying {file_name} to configs failed: {str(e)}")
+

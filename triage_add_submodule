@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+import subprocess
+import sys
+import os
+import time
+
+# Get the target directory from command-line argument
+if len(sys.argv) > 1:
+    target_directory = sys.argv[1]
+else:
+    target_directory = os.getcwd()
+
+# Define a dictionary of submodules to add
+submodules = {
+    "ast2600": "https://git.ami.com.tw/core/lts/spx-13/core/ast2600",
+    "bootloader": "https://git.ami.com.tw/core/lts/spx-13/core/bootloader",
+    "common": "https://git.ami.com.tw/core/lts/spx-13/core/common",
+    "kernel": "https://git.ami.com.tw/core/lts/spx-13/core/kernel",
+    "target": "https://git.ami.com.tw/core/lts/spx-13/core/target",
+    "vmcli": "https://git.ami.com/core/lts/spx-13/utilities/vmcli"
+}
+
+# Add submodules
+for submodule_name, submodule_url in submodules.items():
+    submodule_path = os.path.join(target_directory, "packages", submodule_name)
+    
+    # Special handling for the vmcli submodule path
+    if submodule_name == "vmcli":
+        submodule_path = os.path.join(target_directory, "packages", "utilities", "packages", "vmcli")
+    
+    # Change the current working directory to the target directory
+    os.chdir(target_directory)
+    
+    # Use the git command to add submodules
+    subprocess.Popen(["git", "submodule", "add", "-b", "LTS-v13", "--force", submodule_url, submodule_path]).wait()
+    
+    # Wait for 1 second
+    time.sleep(1)
+    
+    print("Added submodule {} to {}".format(submodule_name, submodule_path))
+
